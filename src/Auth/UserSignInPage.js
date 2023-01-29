@@ -174,7 +174,7 @@ const UserSignInPage = ({ navigation }) => {
                   color: "#008751",
                 }}
               >
-                One Data
+                TRAIL SYSTEM
               </Text>
             </View>
           </View>
@@ -215,7 +215,7 @@ const UserSignInPage = ({ navigation }) => {
                 textAlign: "center",
               }}
             >
-              Click to continue
+              CLICK TO CONTINUE
             </Text>
           </TouchableOpacity>
         </View>

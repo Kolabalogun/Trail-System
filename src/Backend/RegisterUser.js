@@ -10,5 +10,3 @@ const RegisterUser = () => {
 };
 
 export default RegisterUser;
-
-const styles = StyleSheet.create({});

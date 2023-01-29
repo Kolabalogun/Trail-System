@@ -1,6 +1,5 @@
 import {
   Image,
-  ImageBackground,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -9,15 +8,22 @@ import {
   View,
 } from "react-native";
 import React from "react";
-import { styles } from "../../Function/styles";
-import Header from "../Components/Header";
+import Header from "../../Components/Header";
+import { styles } from "../../../Function/styles";
 
-export default function Home({ navigation }) {
+const ReceivedMemo = ({ navigation }) => {
+  function navigateTogoBack(params) {
+    navigation.goBack();
+  }
   return (
     <SafeAreaView style={styles.container}>
-      <Header />
+      <Header
+        functions={navigateTogoBack}
+        imgtype={require("../../../../assets/ba.png")}
+        title={"Received Memo"}
+      />
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView>
         <View
           style={{
             display: "flex",
@@ -28,7 +34,7 @@ export default function Home({ navigation }) {
           }}
         >
           <TouchableOpacity
-            onPress={() => navigation.navigate("SendMemo")}
+            onPress={() => navigation.navigate("ReceivedInternalMemo")}
             style={{
               display: "flex",
               flexDirection: "column",
@@ -37,40 +43,39 @@ export default function Home({ navigation }) {
           >
             <Image
               style={{ height: 200 }}
-              source={require("../../../assets/cmm.png")}
+              source={require("../../../../assets/im.png")}
               resizeMode="contain"
             />
+            {/* <Text
+              style={{ fontSize: 18, fontWeight: "500", paddingVertical: 10 }}
+            >
+              Internal Memo
+            </Text> */}
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate("ReceivedMemo")}
+            onPress={() => navigation.navigate("ReceivedExternalMemo")}
             style={{
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              marginVertical: 10,
+              marginTop: 60,
             }}
           >
             <Image
               style={{ height: 200 }}
-              source={require("../../../assets/rm.png")}
-              resizeMode="cover"
+              source={require("../../../../assets/em.png")}
+              resizeMode="contain"
             />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("OutboxMemo")}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-            }}
-          >
-            <Image
-              style={{ height: 200 }}
-              source={require("../../../assets/sm.png")}
-            />
+            {/* <Text
+              style={{ fontSize: 18, fontWeight: "500", paddingVertical: 10 }}
+            >
+              External Memo
+            </Text> */}
           </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
-}
+};
+
+export default ReceivedMemo;

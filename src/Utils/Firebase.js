@@ -4,12 +4,13 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAnwgO_ELxdoANOr5J-gtuRVcL_WxvUrnw",
-  authDomain: "electronic-data-system.firebaseapp.com",
-  projectId: "electronic-data-system",
-  storageBucket: "electronic-data-system.appspot.com",
-  messagingSenderId: "778401466746",
-  appId: "1:778401466746:web:755a0706973211d72c2ec3",
+  apiKey: "AIzaSyB_vPg98h8xjfgRe85WOrzD9-1_VS6j2KQ",
+  authDomain: "trail-system-99544.firebaseapp.com",
+  projectId: "trail-system-99544",
+  storageBucket: "trail-system-99544.appspot.com",
+  messagingSenderId: "922425853289",
+  appId: "1:922425853289:web:2b47d9a0b8371d1843e9f8",
+  measurementId: "G-3CNSC3F4R4",
 };
 
 const app = initializeApp(firebaseConfig);

@@ -1,10 +1,11 @@
 import * as React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import TabNavigations from "./TabNavigation";
-import Credit from "../FrontEnd/Pages/Credit";
-import ChangeTheme from "../FrontEnd/Pages/ChangeTheme";
+
 import CustomDrawer from "./CustomDrawer";
 import { useGlobalContext } from "./Context";
+import AddUser from "../Frontend/Pages/AddUser";
+import AddDepartments from "../Frontend/Pages/AddDepartments";
 
 const Drawer = createDrawerNavigator();
 
@@ -30,9 +31,9 @@ export default function DrawerNavigation() {
       initialRouteName="Go Home"
     >
       <Drawer.Screen name="Go Home" component={TabNavigations} />
-      <Drawer.Screen name="Change Theme" component={ChangeTheme} />
+      <Drawer.Screen name="Add User" component={AddUser} />
 
-      <Drawer.Screen name="Credits" component={Credit} />
+      <Drawer.Screen name="Add Departments" component={AddDepartments} />
     </Drawer.Navigator>
   );
 }

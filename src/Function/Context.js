@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
+import { signOut } from "firebase/auth";
 
 const AppContext = React.createContext();
 
@@ -22,8 +23,6 @@ LogBox.ignoreLogs([
 ]);
 
 const AppProvider = ({ children }) => {
-  const [competition, competitionF] = useState(4);
-
   const [notification, notificationF] = useState("");
   const [loader, loaderF] = useState("");
 
@@ -73,9 +72,6 @@ const AppProvider = ({ children }) => {
     };
   }
 
-  useEffect(() => {
-    getTeamsFromDB();
-  }, []);
   // get list of users from firebase
 
   const [UsersToken, UsersTokenF] = useState("");
@@ -91,105 +87,6 @@ const AppProvider = ({ children }) => {
       UsersTokenF({ ...snapshot.data() });
     }
   };
-
-  // console.log( UsersToken, 'context line 137');
-
-  // to delete Teams
-  const handleDeleteTeam = async (id) => {
-    try {
-      loaderF(true);
-      await deleteDoc(doc(db, "Teams", id));
-      loaderF(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  // to delete Teams
-
-  // get list of teams from firebase
-
-  const [MatchsFromDBi, MatchsFromDBiF] = useState([]);
-
-  const MatchsFromDB = MatchsFromDBi;
-  MatchsFromDB.sort(function (a, b) {
-    return a.dateId - b.dateId;
-  });
-
-  const getMatchsFromDB = () => {
-    loaderF(true);
-    const unsub = onSnapshot(
-      collection(db, "Matchs"),
-
-      (snapshot) => {
-        let list = [];
-
-        snapshot.docs.forEach((doc) => {
-          list.push({ id: doc.id, ...doc.data() });
-        });
-        MatchsFromDBiF(list);
-        loaderF(false);
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
-
-    return () => {
-      unsub();
-    };
-  };
-
-  useEffect(() => {
-    getMatchsFromDB();
-    getPlayerGoalAssistData();
-  }, []);
-
-  // to delete Matchs
-  const handleDeleteMatch = async (id) => {
-    // console.warn('sdhgghds');
-    // if (window.confirm("Are you sure you want to delete this blog?")) {
-    try {
-      loaderF(true);
-      await deleteDoc(doc(db, "Matchs", id));
-      loaderF(false);
-      navigation.goBack();
-      // toast.error("Blog successfully deleted");
-    } catch (error) {
-      console.log(error);
-    }
-    // }
-  };
-
-  // get list of
-  const [TopPicksDB, TopPicksDBF] = useState([]);
-
-  function getTopPick(params) {
-    loaderF(true);
-    const unsub = onSnapshot(
-      collection(db, "Top Pick"),
-
-      (snapshot) => {
-        let list = [];
-
-        snapshot.docs.forEach((doc) => {
-          list.push({ id: doc.id, ...doc.data() });
-        });
-        TopPicksDBF(list);
-        loaderF(false);
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
-
-    return () => {
-      unsub();
-    };
-  }
-
-  useEffect(() => {
-    getTopPick();
-  }, []);
 
   // check if there is internet connecttion
   const [online, onlineF] = useState(true);
@@ -216,23 +113,12 @@ const AppProvider = ({ children }) => {
     }
   };
 
-  const storeTheme = async (value) => {
-    try {
-      await AsyncStorage.setItem("@userSelectedTheme", value);
-    } catch (e) {
-      // saving error
-    }
-  };
-
   const getData = async () => {
     try {
       const value = await AsyncStorage.getItem("@checkUserSignIn");
-      const theme = await AsyncStorage.getItem("@userSelectedTheme");
+
       if (value !== null) {
         currentUserF(value);
-      }
-      if (theme !== null) {
-        currentThemeF(theme);
       }
     } catch (e) {
       // error reading value
@@ -242,9 +128,6 @@ const AppProvider = ({ children }) => {
   useEffect(() => {
     getData();
   }, []);
-
-  const [competitionType, competitionTypeF] = useState("Engine 4.0");
-
   // refreshing
 
   const wait = (timeout) => {
@@ -263,7 +146,7 @@ const AppProvider = ({ children }) => {
 
   // let projectVersion = "1.8";
 
-  const [projectVersion, projectVersionF] = useState("1.9");
+  const [projectVersion, projectVersionF] = useState("1.0");
 
   const [AutoUpdateState, AutoUpdateStateF] = useState({
     isthereUpdate: false,
@@ -285,33 +168,146 @@ const AppProvider = ({ children }) => {
     loaderF(false);
   };
 
-  // console.log(AutoUpdateState);
-
-  // List of GoalScorers and Assits
-
-  const [PlayerGoalAssistData, PlayerGoalAssistDataF] = useState([]);
+  //$$$$$$$$$$$$$$$$$$
 
   useEffect(() => {
-    getPlayerGoalAssistData();
+    auth.onAuthStateChanged((authUser) => {
+      if (authUser) {
+        currentAdminF(authUser);
+      } else {
+        currentAdminF(null);
+      }
+    });
   }, []);
 
-  const getPlayerGoalAssistData = async () => {
+  // Ministries list
+
+  const Ministries = [
+    "Ministry of Health",
+    "Ministry of Education",
+    "Ministry of Finance",
+  ];
+
+  // Departments list
+
+  const Departments = [
+    "Departments of Health",
+    "Departments of Education",
+    "Departments of Finance",
+  ];
+
+  // LevelofAccess list
+
+  const LevelofAccess = ["1", "2", "3"];
+
+  // type of memo
+
+  const typeOfMemo = ["Internal Memo", "External Memo"];
+
+  //   Memo
+
+  const [Memos, MemosF] = useState([]);
+
+  useEffect(() => {
     loaderF(true);
-    const docRef = doc(db, "Player Data", "WmVhSufxYzBSkL8HsqkF");
-    const snapshot = await getDoc(docRef);
-    if (snapshot.exists()) {
-      PlayerGoalAssistDataF([...snapshot.data().playerDatas]);
+    const unsub = onSnapshot(
+      collection(db, "Memo"),
+
+      (snapshot) => {
+        let list = [];
+
+        snapshot.docs.forEach((doc) => {
+          list.push({ id: doc.id, ...doc.data() });
+        });
+
+        if (!list || list.length === 0) {
+        } else {
+          MemosF(list);
+
+          loaderF(false);
+        }
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+
+    return () => {
+      unsub();
+    };
+  }, []);
+
+  // to delete Memo
+  const handleDeleteMemo = async (id) => {
+    try {
+      loaderF(true);
+      await deleteDoc(doc(db, "Memo", id));
+      loaderF(false);
+      navigation.goBack();
+    } catch (error) {
+      console.log(error);
     }
-    loaderF(false);
   };
 
-  // Session Or Year
+  //   User
 
-  const sessions = ["2020/2021", "2021/2022", "2021/2022"];
+  const [UsersFromDB, UsersFromDBF] = useState([]);
 
-  // Sub Admins
+  function getUsersFromDB() {
+    loaderF(true);
 
-  const [subAdmins, setsubAdmins] = useState(null);
+    const unsub = onSnapshot(
+      collection(db, "Users"),
+
+      (snapshot) => {
+        let list = [];
+
+        snapshot.docs.forEach((doc) => {
+          list.push({ id: doc.id, ...doc.data() });
+        });
+
+        if (!list || list.length === 0) {
+        } else {
+          UsersFromDBF(list);
+
+          loaderF(false);
+        }
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+    return () => {
+      unsub();
+    };
+  }
+
+  useEffect(() => {
+    getUsersFromDB();
+  }, []);
+
+  //   logging out user
+  const handleLogout = () => {
+    signOut(auth).then(() => {
+      currentAdminF(null);
+      currentUserF(null);
+      storeData(null);
+    });
+  };
+
+  //current User and ministry
+
+  const [CurrentUserfromDb, CurrentUserfromDbF] = useState(null);
+
+  useEffect(() => {
+    UsersFromDB.map((user) => {
+      if (user?.email.toLowerCase() === currentAdmin?.email) {
+        CurrentUserfromDbF(user);
+      }
+    });
+  }, [UsersFromDB]);
+
+  const StaffRole = ["Head of Department", "Staff"];
 
   return (
     <AppContext.Provider
@@ -324,45 +320,35 @@ const AppProvider = ({ children }) => {
         currentUserF,
         currentAdmin,
         currentAdminF,
-        storeTheme,
-        currentTheme,
-        currentThemeF,
 
         loader,
         loaderF,
 
-        TeamsFromDB,
-
-        competition,
-        competitionF,
-
-        handleDeleteTeam,
-
-        MatchsFromDB,
-
-        handleDeleteMatch,
-
         online,
         UsersToken,
         storeData,
-        // getData,
-        TopPicksDB,
-        competitionType,
-        competitionTypeF,
+        getData,
 
-        getMatchsFromDB,
-        getTopPick,
-        getTeamsFromDB,
         AutoUpdateState,
         AutoUpdateStateF,
         projectVersion,
         projectVersionF,
 
-        PlayerGoalAssistData,
-        getPlayerGoalAssistData,
+        // $$$$$$$$$$$$$$4
 
-        setsubAdmins,
-        subAdmins,
+        Ministries,
+        Departments,
+        LevelofAccess,
+        typeOfMemo,
+        Memos,
+        MemosF,
+        handleDeleteMemo,
+        UsersFromDB,
+        UsersFromDBF,
+        handleLogout,
+        CurrentUserfromDb,
+        getUsersFromDB,
+        StaffRole,
       }}
     >
       {children}

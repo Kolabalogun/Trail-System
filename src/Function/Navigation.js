@@ -1,59 +1,79 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { StyleSheet, View } from "react-native";
-// import UserSignInPage from "../Authentication/UserSignInPage";
-// import AddTeams from "../Backend/Team/AddTeams";
-// import CreateMatch from "../Backend/Match/CreateMatch";
-// import EditTeams from "../Backend/Team/EditTeams";
-// import MatchInfo from "../Backend/Match/MatchInfo";
 
-// import MatchResult from "../FrontEnd/Pages/MatchResult";
 import { useGlobalContext } from "./Context";
 
-// import DrawerNavigation from "./DrawerNavigation";
-// import AdminNavigation from "./AdminNavigation";
-// import AutoUpdatee from "../Backend/AutoUpdate/AutoUpdate";
-// import ListofPlayers from "../Backend/Player/ListofPlayers";
-// import Players from "../Backend/Player/Players";
-// import AuthNavigations from "./AuthNavigation";
 import TabNavigations from "./TabNavigation";
 import UserSignInPage from "../Auth/UserSignInPage";
 import Login from "../Auth/Login";
+import SendMemo from "../Frontend/Pages/Home/SendMemo";
+import ReceivedMemo from "../Frontend/Pages/Home/ReceivedMemo";
+import ReceivedInternalMemo from "../Frontend/Pages/Home/Received/ReceivedInternalMemo";
+import ReceivedExternalMemo from "../Frontend/Pages/Home/Received/ReceivedExternalMemo";
+import OutboxMemo from "../Frontend/Pages/Home/OutboxMemo";
+import OutboxExternalMemo from "../Frontend/Pages/Home/Outbox/OutboxExternalMemo";
+import OutboxInternalMemo from "../Frontend/Pages/Home/Outbox/OutboxInternalMemo";
+import MemoDetails from "../Frontend/Pages/Home/MemoDetails";
+import MemoReceiverDetails from "../Frontend/Pages/Home/MemoReceiverDetails";
+import DrawerNavigation from "./DrawerNavigation";
+import AutoUpdatee from "../Frontend/Pages/AutoUpdate";
 
 const Stack = createNativeStackNavigator();
 
 const Navigations = () => {
-  const { currentUser } = useGlobalContext();
+  const { currentUser, AutoUpdateState, projectVersion } = useGlobalContext();
 
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-      initialRouteName={"TabNavigations"}
-    >
-      {!currentUser ? (
-        <>
-          <Stack.Screen name="UserSignIn" component={UserSignInPage} />
-          <Stack.Screen name="Login" component={Login} />
-        </>
+    <>
+      {projectVersion !== AutoUpdateState.currentVersion ? (
+        <AutoUpdatee />
       ) : (
-        <>
-          <Stack.Screen name="TabNavigations" component={TabNavigations} />
-
-          {/* <Stack.Screen name="DrawerNavigation" component={DrawerNavigation} /> */}
-          {/* <Stack.Screen name="AdminNavigation" component={AdminNavigation} /> */}
-          {/* 
-          <Stack.Screen name="Add Teams" component={AddTeams} /> */}
-          {/* <Stack.Screen name="Create Match" component={CreateMatch} />
-          <Stack.Screen name="MatchInfo" component={MatchInfo} /> */}
-
-          {/* <Stack.Screen name="MatchResult" component={MatchResult} />
-          <Stack.Screen name="Players" component={Players} /> */}
-          {/* 
-          <Stack.Screen name="AuthNavigations" component={AuthNavigations} /> */}
-        </>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}
+          initialRouteName={"TabNavigations"}
+        >
+          {!currentUser ? (
+            <>
+              <Stack.Screen name="UserSignIn" component={UserSignInPage} />
+              <Stack.Screen name="Login" component={Login} />
+            </>
+          ) : (
+            <>
+              <Stack.Screen
+                name="DrawerNavigation"
+                component={DrawerNavigation}
+              />
+              <Stack.Screen name="TabNavigations" component={TabNavigations} />
+              <Stack.Screen name="SendMemo" component={SendMemo} />
+              <Stack.Screen name="ReceivedMemo" component={ReceivedMemo} />
+              <Stack.Screen name="OutboxMemo" component={OutboxMemo} />
+              <Stack.Screen name="MemoDetails" component={MemoDetails} />
+              <Stack.Screen
+                name="MemoReceiverDetails"
+                component={MemoReceiverDetails}
+              />
+              <Stack.Screen
+                name="ReceivedInternalMemo"
+                component={ReceivedInternalMemo}
+              />
+              <Stack.Screen
+                name="ReceivedExternalMemo"
+                component={ReceivedExternalMemo}
+              />
+              <Stack.Screen
+                name="OutboxExternalMemo"
+                component={OutboxExternalMemo}
+              />
+              <Stack.Screen
+                name="OutboxInternalMemo"
+                component={OutboxInternalMemo}
+              />
+            </>
+          )}
+        </Stack.Navigator>
       )}
-    </Stack.Navigator>
+    </>
   );
 };
 

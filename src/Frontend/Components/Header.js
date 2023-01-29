@@ -11,7 +11,6 @@ const Header = ({
   imgtype2,
   title,
 }) => {
-  const { currentTheme } = useGlobalContext();
   return (
     <View style={styles.homeHeader}>
       <TouchableOpacity
@@ -31,9 +30,7 @@ const Header = ({
         />
       </TouchableOpacity>
       <View style={styles.headerTitleDiv}>
-        <Text style={styles.headerTitle}>
-          {title ? title : "Unilorin League"}
-        </Text>
+        <Text style={styles.headerTitle}>{title ? title : "Trail System"}</Text>
       </View>
       <TouchableOpacity
         onPress={functions2 && functions2}

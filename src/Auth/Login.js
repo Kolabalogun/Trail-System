@@ -13,11 +13,14 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 
-import { sigEmailWithEmailAndPassword } from "firebase/auth";
+import {
+  sigEmailWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 import { useGlobalContext } from "../Function/Context";
 import { auth } from "../Utils/Firebase";
-import Nav from "../Frontend/Components/Nav";
+
 import Header from "../Frontend/Components/Header";
 import Loader from "../Frontend/Components/Loader";
 
@@ -25,7 +28,8 @@ const Login = ({ navigation }) => {
   const {
     notification,
     notificationF,
-
+    currentUser,
+    currentUserF,
     currentAdminF,
   } = useGlobalContext();
 
@@ -33,17 +37,16 @@ const Login = ({ navigation }) => {
 
   const [loader, loaderF] = useState("");
 
-  let studentEmail = `${Email}@gmail.com`;
-
-  const [password, passwordF] = useState("123456789");
+  const [password, passwordF] = useState("");
 
   const handleSignIn = () => {
     if (Email && password) {
       loaderF(true);
-      sigEmailWithEmailAndPassword(auth, studentEmail, password)
+      signInWithEmailAndPassword(auth, Email, password)
         .then((userCredential) => {
           const user = userCredential.user;
           currentAdminF(user);
+          currentUserF(user);
           navigation.navigate("TabNavigations");
         })
 
@@ -127,9 +130,9 @@ export default Login;
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-    backgroundColor: "aliceblue",
-    padding: 20,
+    // paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    backgroundColor: "white",
+    padding: 15,
     flex: 1,
   },
   topSection: {
